@@ -1,0 +1,28 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump-level:
+        description: Version level to be bumped
+        default: patch
+        required: false
+        type: choice
+        options:
+        - none
+        - patch
+        - minor
+        - major
+
+jobs:
+  create:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: ottofeller/github-actions/create-release@main
+      with:
+        initial-version: 0.1.0
+        bump-level: ${{ github.event.inputs.bump-level }}
+        release-branches: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        update-children-bump-level: ${{ github.event.inputs.bump-level }}
