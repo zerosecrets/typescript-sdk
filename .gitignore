@@ -20,4 +20,6 @@ backend/treeofstars/settings_local.py
 .DS_Store
 node_modules
 tsconfig.tsbuildinfo
-dist
+index.js
+index.js.map
+@types

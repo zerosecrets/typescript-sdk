@@ -1,8 +1,8 @@
 /** @type {import('esbuild').BuildOptions} */
 const config = {
   entryPoints: ['./src/index.ts'],
-  outdir: 'dist',
   platform: 'node',
+  outfile: 'index.js',
   target: 'node16',
   bundle: true,
   minify: true,

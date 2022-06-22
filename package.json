@@ -1,9 +1,8 @@
 {
   "name": "@zerosecrets/zero",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "ISC",
   "main": "./dist/index.js",
-  "types": "./dist/types.d.ts",
   "keywords": [
     "sdk",
     "zero",

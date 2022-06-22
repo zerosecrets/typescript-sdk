@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "outFile": "dist/types.d.ts",
+    "outFile": "@types/zero/index.d.ts",
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "strict": true,
@@ -17,5 +17,5 @@
       ]
     }
   },
-  "exclude": ["./dist"]
+  "exclude": ["./@types"]
 }
