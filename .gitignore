@@ -11,6 +11,7 @@ venv.bak/
 /.idea
 /.history
 /backend/.idea
+.vscode/settings.json
 .vscode/tasks.json
 backend/treeofstars/settings_local.py
 
