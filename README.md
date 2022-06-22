@@ -15,10 +15,10 @@ import {zero} from '@zerosecrets/zero'
 let result
 
 try {
-  result = zero({
+  result = await zero({
     token: process.env.ZERO_TOKEN,
     apis: ["aws"],
-  })
+  }).fetch()
 } catch(error) {
   console.error(error)
 }
