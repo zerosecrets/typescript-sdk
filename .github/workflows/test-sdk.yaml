@@ -1,0 +1,36 @@
+name: Test SDK
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+
+jobs:
+  lint:
+    name: Lint sdk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ottofeller/github-actions/npm-run@main
+        with:
+          node-version: 16
+          command: npm run lint
+
+  test:
+    name: Test sdk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ottofeller/github-actions/npm-run@main
+        with:
+          node-version: 16
+          command: npm run test -- --all
+
+  typecheck:
+    name: Typecheck sdk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ottofeller/github-actions/npm-run@main
+        with:
+          node-version: 16
+          command: npm run typecheck
