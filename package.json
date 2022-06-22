@@ -15,6 +15,10 @@
     "format": "ofmt './src/**/*'",
     "build": "node ./esbuild.config.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zerosecrets/typescript-sdk"
+  },
   "dependencies": {
     "graphql-request": "4.3.0"
   },
