@@ -1,6 +1,6 @@
 {
   "name": "@zerosecrets/zero",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "ISC",
   "main": "./dist/index.js",
   "keywords": [
@@ -13,7 +13,7 @@
     "typecheck": "tsc",
     "lint": "olint './src/**/*.{ts,tsx}' && ofmt --lint './src/**/*'",
     "format": "ofmt './src/**/*'",
-    "build": "node ./esbuild.config.js && tsc"
+    "build": "node ./esbuild.config.js"
   },
   "dependencies": {
     "graphql-request": "4.3.0"
