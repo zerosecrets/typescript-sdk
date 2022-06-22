@@ -4,6 +4,11 @@
   "license": "ISC",
   "main": "./dist/index.js",
   "types": "./dist/types.d.ts",
+  "keywords": [
+    "sdk",
+    "zero",
+    "secrets"
+  ],
   "scripts": {
     "test": "jest",
     "typecheck": "tsc",
