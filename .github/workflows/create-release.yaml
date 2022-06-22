@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: ottofeller/github-actions/create-release@main
       with:
-        initial-version: 0.1.0
+        initial-version: 0.1.2
         bump-level: ${{ github.event.inputs.bump-level }}
         release-branches: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
