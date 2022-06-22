@@ -12,16 +12,18 @@ Fetch secrets for AWS by passing your `zero` token
 ```typescript
 import {zero} from '@zerosecrets/zero'
 
-let result
+export async function main() {
+  let result
 
-try {
-  result = await zero({
-    token: process.env.ZERO_TOKEN,
-    apis: ["aws"],
-  }).fetch()
-} catch(error) {
-  console.error(error)
+  try {
+    result = await zero({
+      token: process.env.ZERO_TOKEN,
+      apis: ["aws"],
+    }).fetch()
+  } catch(error) {
+    console.error(error)
+  }
+
+  console.log(result?.aws) // {secret: "value", secret2: "value2"}
 }
-
-console.log(result) // {aws: {secret: "value", secret2: "value2"}}
 ```
