@@ -53,6 +53,6 @@ jobs:
       - uses: ottofeller/github-actions/publish-npm@main
         with:
           ref: ${{ needs.set-commit-hash.outputs.commit_hash }}
-          scope: "@ottofeller"
+          scope: "@zerosecrets"
           include-build-step: true
           npm-token: ${{ secrets.NPM_TOKEN }}

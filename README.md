@@ -4,13 +4,13 @@
 Typescript SDK for [Zero](https://tryzero.com). Provides a clear and simple interface for the secrets manager GraphQL API.
 
 ## Installation
-`npm i @zero/zero`
+`npm i @zerosecrets/zero`
 
 ## Usage
 Fetch secrets for AWS by passing your `zero` token
 
 ```typescript
-import {zero} from '@zero/zero'
+import {zero} from '@zerosecrets/zero'
 
 let result
 

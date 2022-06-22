@@ -1,5 +1,5 @@
 {
-  "name": "@ottofeller/zero",
+  "name": "@zerosecrets/sdk",
   "version": "0.1.0",
   "license": "ISC",
   "main": "./dist/index.js",
