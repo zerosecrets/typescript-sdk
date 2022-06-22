@@ -1,0 +1,22 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# editors
+/.idea
+/.history
+/backend/.idea
+.vscode/tasks.json
+backend/treeofstars/settings_local.py
+
+# Misc
+.env.local
+.DS_Store
+node_modules
+tsconfig.tsbuildinfo
+dist
