@@ -9,6 +9,13 @@ Typescript SDK for [Zero](https://tryzero.com). Provides a clear and simple inte
 ## Usage
 Fetch secrets for AWS by passing your `zero` token
 
+- create your own `awesome token`
+![Screenshot 2022-06-30 at 12 51 32 p m](https://user-images.githubusercontent.com/79540316/176648187-a7592c84-9a5b-4a6a-914b-7c487db5ddea.png)
+
+- create a secret
+![Screenshot 2022-06-30 at 12 53 08 p m](https://user-images.githubusercontent.com/79540316/176648634-130d0e0e-3117-423c-909e-39ca9b3d57a4.png)
+
+- use secret token and name to request your tokens
 ```typescript
 import {zero} from '@zerosecrets/zero'
 
