@@ -10,7 +10,7 @@ jest.mock('graphql-request', () => {
 
     GraphQLClient: jest.fn().mockImplementation(() => ({
       request: jest.fn().mockImplementation((_, variables) => {
-        if (variables.apis.length === 0) {
+        if (variables.pick.length === 0) {
           return Promise.reject(new Error('Failed to fetch'))
         }
 
@@ -29,7 +29,7 @@ describe('Zero TypeScript SDK', () => {
     expect(() => {
       zero({
         token: '',
-        apis: ['aws'],
+        pick: ['aws'],
       }).fetch()
     }).toThrowError('Zero token should be non-empty string')
   })
@@ -38,7 +38,7 @@ describe('Zero TypeScript SDK', () => {
     await expect(
       zero({
         token: 'token',
-        apis: ['aws'],
+        pick: ['aws'],
       }).fetch(),
     ).resolves.toEqual({aws: {name: 'value', name2: 'value2'}})
   })
@@ -47,7 +47,7 @@ describe('Zero TypeScript SDK', () => {
     await expect(
       zero({
         token: 'invalid token',
-        apis: ['aws'],
+        pick: ['aws'],
       }).fetch(),
     ).resolves.toEqual({})
   })
@@ -56,7 +56,7 @@ describe('Zero TypeScript SDK', () => {
     await expect(
       zero({
         token: 'token',
-        apis: [],
+        pick: [],
       }).fetch(),
     ).rejects.toThrowError('Failed to fetch')
   })
