@@ -10,7 +10,7 @@ jest.mock('graphql-request', () => {
 
     GraphQLClient: jest.fn().mockImplementation(() => ({
       request: jest.fn().mockImplementation((_, variables) => {
-        if (variables.apis.length === 0) {
+        if (variables.pick.length === 0) {
           return Promise.reject(new Error('Failed to fetch'))
         }
 
