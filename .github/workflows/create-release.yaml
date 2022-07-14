@@ -25,4 +25,4 @@ jobs:
         bump-level: ${{ github.event.inputs.bump-level }}
         release-branches: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        update-children-bump-level: ${{ github.event.inputs.bump-level }}
+        update-root-package_json: true
