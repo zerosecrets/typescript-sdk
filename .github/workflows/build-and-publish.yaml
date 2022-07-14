@@ -30,7 +30,7 @@ jobs:
           command: npm run typecheck
 
   lint:
-    name: Lint code with ESLint
+    name: Lint code with eslint
     runs-on: ubuntu-latest
     steps:
       - uses: ottofeller/github-actions/npm-run@main
@@ -46,7 +46,7 @@ jobs:
           command: npm run test -- --all --verbose
 
   publish-npm:
-    name: Build and Publish npm package
+    name: Build and publish npm package
     needs: [set-commit-hash, typecheck, lint, test]
     runs-on: ubuntu-latest
     steps:
