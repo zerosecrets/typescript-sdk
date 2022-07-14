@@ -1,6 +1,4 @@
 # Zero TypeScript SDK
-
-## Short intro.
 Typescript SDK for [Zero](https://tryzero.com). Provides a clear and simple interface for the secrets manager GraphQL API.
 
 ## Installation
