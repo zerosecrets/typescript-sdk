@@ -20,7 +20,7 @@ export async function main() {
   try {
     result = await zero({
       token: process.env.ZERO_TOKEN,
-      apis: ["aws"],
+      pick: ["aws"],
     }).fetch()
   } catch(error) {
     console.error(error)
