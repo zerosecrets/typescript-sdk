@@ -1,10 +1,10 @@
 declare module "@zerosecrets/zero" {
-    export const zero: <T extends string>(params: {
-        apis: T[];
+    export const zero: (params: {
+        pick: string[];
         token: string;
     }) => {
         fetch(): Promise<{
-            T?: {
+            [key: string]: {
                 [key: string]: string;
             } | undefined;
         }>;
