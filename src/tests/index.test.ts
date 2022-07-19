@@ -15,13 +15,16 @@ jest.mock('graphql-request', () => {
             data: null,
 
             errors: [
-                {
-                    "message": "Could not establish connection with database",
-                    "locations": [{"line": 2, "column": 2}],
-                    "path": ["secrets"],
-                    "extensions": {"internal_error": "Error occurred while creating a new object: error connecting to server: Connection refused (os error 61)"}
-                }
-            ]
+              {
+                message: 'Could not establish connection with database',
+                locations: [{line: 2, column: 2}],
+                path: ['secrets'],
+                extensions: {
+                  internal_error:
+                    'Error occurred while creating a new object: error connecting to server: Connection refused (os error 61)',
+                },
+              },
+            ],
           })
         }
 

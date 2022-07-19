@@ -11,6 +11,6 @@ export type ResponseBody = {
   errors?: [
     {
       message: string
-    }
+    },
   ]
 }
