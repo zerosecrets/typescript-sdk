@@ -16,6 +16,10 @@ export const zero = (params: {pick: Array<string>; token: string}) => {
     async fetch(): Promise<{[key: string]: {[key: string]: string} | undefined}> {
       const response = await client.request<ResponseBody>(Secrets, params)
 
+      if(response.errors) {
+        throw new Error(response.errors[0].message)
+      }
+
       return response.secrets.reduce((secretAccumulator, secret) => {
         return {
           ...secretAccumulator,

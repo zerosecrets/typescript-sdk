@@ -11,7 +11,21 @@ jest.mock('graphql-request', () => {
     GraphQLClient: jest.fn().mockImplementation(() => ({
       request: jest.fn().mockImplementation((_, variables) => {
         if (variables.pick.length === 0) {
-          return Promise.reject(new Error('Failed to fetch'))
+          return Promise.resolve({
+            data: null,
+
+            errors: [
+              {
+                message: 'Could not establish connection with database',
+                locations: [{line: 2, column: 2}],
+                path: ['secrets'],
+                extensions: {
+                  internal_error:
+                    'Error occurred while creating a new object: error connecting to server: Connection refused (os error 61)',
+                },
+              },
+            ],
+          })
         }
 
         if (variables.token !== 'token') {
@@ -58,6 +72,6 @@ describe('Zero TypeScript SDK', () => {
         token: 'token',
         pick: [],
       }).fetch(),
-    ).rejects.toThrowError('Failed to fetch')
+    ).rejects.toThrowError('Could not establish connection with database')
   })
 })
