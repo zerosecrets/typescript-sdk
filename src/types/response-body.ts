@@ -7,4 +7,10 @@ export type ResponseBody = {
       value: string
     }>
   }>
+
+  errors?: [
+    {
+      message: string
+    }
+  ]
 }
