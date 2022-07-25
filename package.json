@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@ottofeller/eslint-config-ofmt": "1.3.6",
-    "@ottofeller/ofmt": "1.3.6",
+    "@ottofeller/ofmt": "1.4.1",
     "@ottofeller/prettier-config-ofmt": "1.3.6",
     "@types/jest": "27.5.0",
     "esbuild": "0.14.49",
