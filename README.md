@@ -13,6 +13,10 @@ Fetch secrets for AWS by passing your `zero` token
 import {zero} from '@zerosecrets/zero'
 
 export async function main() {
+  if (!process.env.ZERO_TOKEN) {
+    throw new Error('Did you forget to set the ZERO_TOKEN environment variable?')
+  }
+  
   let result
 
   try {
