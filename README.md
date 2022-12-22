@@ -30,4 +30,6 @@ export async function main() {
 
   console.log(result?.aws) // {secret: "value", secret2: "value2"}
 }
+
+main().catch(console.error)
 ```
