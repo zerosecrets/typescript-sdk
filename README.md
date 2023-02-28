@@ -23,6 +23,7 @@ export async function main() {
     result = await zero({
       token: process.env.ZERO_TOKEN,
       pick: ['aws'],
+      callerName: "staging",
     }).fetch()
   } catch(error) {
     console.error(error)
