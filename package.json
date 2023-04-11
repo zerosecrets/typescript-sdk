@@ -20,7 +20,7 @@
     "url": "https://github.com/zerosecrets/typescript-sdk"
   },
   "dependencies": {
-    "graphql-request": "5.1.0"
+    "graphql-request": "5.2.0"
   },
   "devDependencies": {
     "@ottofeller/eslint-config-ofmt": "1.7.2",
