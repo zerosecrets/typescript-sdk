@@ -1,7 +1,7 @@
 import {GraphQLClient} from 'graphql-request'
 import {Secrets} from './graphql/secrets'
 import {ResponseBody} from './types'
-const GRAPHQL_ENDPOINT_URL = 'https://core.tryzero.com/v1/graphql'
+const GRAPHQL_ENDPOINT_URL = 'https://core.tryzero.com/graphql'
 
 export const zero = (params: {pick: Array<string>; token: string, callerName?: string}) => {
   if (typeof params.token === 'undefined' || params.token.length === 0) {

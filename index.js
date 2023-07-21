@@ -177,7 +177,7 @@ ${a.join(`
       }
     }
   }
-`;var wy="https://core.tryzero.com/v1/graphql",Ny=e=>{if(typeof e.token>"u"||e.token.length===0)throw new Error("Zero token should be non-empty string");let a=new b0.GraphQLClient(wy,{headers:{}});return{async fetch(){let i=await a.request(h0,e);if(i.errors)throw new Error(i.errors[0].message);return i.secrets.reduce((t,n)=>({...t,[n.name]:n.fields.reduce((r,p)=>({...r,[p.name]:p.value}),{})}),{})}}};0&&(module.exports={zero});
+`;var wy="https://core.tryzero.com/graphql",Ny=e=>{if(typeof e.token>"u"||e.token.length===0)throw new Error("Zero token should be non-empty string");let a=new b0.GraphQLClient(wy,{headers:{}});return{async fetch(){let i=await a.request(h0,e);if(i.errors)throw new Error(i.errors[0].message);return i.secrets.reduce((t,n)=>({...t,[n.name]:n.fields.reduce((r,p)=>({...r,[p.name]:p.value}),{})}),{})}}};0&&(module.exports={zero});
 /*! Bundled license information:
 
 mime-db/index.js:
