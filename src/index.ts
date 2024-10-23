@@ -3,7 +3,7 @@ import {Secrets} from './graphql/secrets'
 import {ResponseBody} from './types'
 const GRAPHQL_ENDPOINT_URL = 'https://core.tryzero.com/graphql'
 
-export const zero = (params: {pick: Array<string>; token: string, callerName?: string}) => {
+export const zero = (params: {pick: Array<string>; token: string; callerName?: string}) => {
   if (typeof params.token === 'undefined' || params.token.length === 0) {
     throw new Error('Zero token should be non-empty string')
   }
@@ -16,7 +16,7 @@ export const zero = (params: {pick: Array<string>; token: string, callerName?: s
     async fetch(): Promise<{[key: string]: {[key: string]: string} | undefined}> {
       const response = await client.request<ResponseBody>(Secrets, params)
 
-      if(response.errors) {
+      if (response.errors) {
         throw new Error(response.errors[0].message)
       }
 

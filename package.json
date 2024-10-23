@@ -12,7 +12,7 @@
     "test": "jest",
     "typecheck": "tsc",
     "lint": "prettier -c '**'",
-    "format": "prettier -w '**''",
+    "format": "prettier -w '**'",
     "build": "node ./esbuild.config.js"
   },
   "repository": {
