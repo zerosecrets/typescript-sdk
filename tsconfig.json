@@ -12,9 +12,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "sdk/*": [
-        "./src/*"
-      ]
+      "sdk/*": ["./src/*"]
     }
   },
   "exclude": ["index.d.ts"]

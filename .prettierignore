@@ -1,0 +1,7 @@
+.prettierignore
+.gitignore
+.npmignore
+.npmrc
+index.js
+index.js.map
+LICENSE
