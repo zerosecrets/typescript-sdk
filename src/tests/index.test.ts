@@ -85,6 +85,7 @@ describe('Zero TypeScript SDK - createCredentialSecret', () => {
     const sdk = zero({apiToken: 'token'})
 
     await expect(
+      // @ts-ignore - testing invalid input
       sdk.createCredentialSecret({
         accessToken: 'access',
         refreshToken: 'refresh',
@@ -97,7 +98,8 @@ describe('Zero TypeScript SDK - createCredentialSecret', () => {
 
   it('successfully creates a credential secret', async () => {
     ;(fetch as jest.Mock).mockResolvedValueOnce({
-      json: () => Promise.resolve({message: 'Success'}),
+      ok: true,
+      json: () => Promise.resolve('The credentials secret has been successfully created'),
     })
 
     const sdk = zero({apiToken: 'token'})
@@ -111,11 +113,9 @@ describe('Zero TypeScript SDK - createCredentialSecret', () => {
       vendor: 'google',
     })
 
-    expect(response).toEqual({message: 'Success'})
-    expect(fetch).toHaveBeenCalledWith(
-      'https://http.michael.tryzero.com/cm/create',
-      expect.objectContaining({method: 'POST'}),
-    )
+    expect(response).toEqual('The credentials secret has been successfully created')
+
+    expect(fetch).toHaveBeenCalledWith('https://http.tryzero.com/cm/create', expect.objectContaining({method: 'POST'}))
   })
 })
 
