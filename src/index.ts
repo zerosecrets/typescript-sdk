@@ -95,7 +95,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
      * @param params
      * @returns
      */
-    async fetch(params: {pick: Array<string>; callerName?: string}): Promise<{
+    async fetch(params): Promise<{
       [key: string]: {[key: string]: string} | undefined
     }> {
       const client = new GraphQLClient(GRAPHQL_ENDPOINT_URL, {headers: {}})
@@ -127,16 +127,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
      * @returns Success message
      * @param params
      */
-    async createCredentialSecret(params: {
-      accessToken: string
-      expiresAt?: string
-      expiresIn?: string
-      meta?: Record<string, string>
-      refreshToken: string
-      secretKey: string
-      secretName: string
-      vendor: string
-    }): Promise<any> {
+    async createCredentialSecret(params): Promise<any> {
       if (!params.expiresAt && !params.expiresIn) {
         throw new Error('Either expiresAt or expiresIn should be provided')
       }
@@ -176,18 +167,22 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
             apiToken: config.apiToken,
             expiresAt: params.expiresAt,
             expiresIn: params.expiresIn,
-            meta: JSON.stringify(params.meta),
+            meta: params.meta,
             refreshToken: encryptedRefreshToken,
             secretName: params.secretName,
             vendor: params.vendor,
           }),
           method: 'POST',
         })
+
+        if (!response.ok) {
+          throw new Error('Failed to create credential secret')
+        }
       } catch (error) {
         throw error
       }
 
-      return await response.json()
+      return 'The credentials secret has been successfully created'
     },
 
     /**
@@ -195,12 +190,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
      * @param params
      * @returns
      */
-    async fetchCredentialSecret(params: {
-      clientId: string
-      clientSecret: string
-      secretName: string
-      secretKey: string
-    }): Promise<any> {
+    async fetchCredentialSecret(params): Promise<any> {
       if (!params.secretKey) {
         throw new Error('Secret key should be provided')
       }
@@ -234,8 +224,8 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         throw error
       }
 
-      const accessToken = decrypt(fetchResponse.accessToken, params.secretKey)
-      const refreshToken = decrypt(fetchResponse.refreshToken, params.secretKey)
+      const decryptedAccessToken = decrypt(fetchResponse.accessToken, params.secretKey)
+      const decryptedRefreshToken = decrypt(fetchResponse.refreshToken, params.secretKey)
       const expiresAt = dayjs(fetchResponse.expiresAt)
 
       if (dayjs().add(10, 'minutes').isAfter(expiresAt)) {
@@ -247,19 +237,18 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
               body: new URLSearchParams({
                 client_id: params.clientId,
                 client_secret: params.clientSecret,
-                refresh_token: refreshToken,
+                refresh_token: decryptedRefreshToken,
                 grant_type: 'refresh_token',
               }).toString(),
             })
 
+            const data = await tokenResponse.json()
+
             if (!tokenResponse.ok) {
-              const data = await tokenResponse.json()
               throw new Error(`Error refreshing token: ${data.error_description}`)
             }
 
-            const data = await tokenResponse.json()
             const newEncryptedAccessToken = encrypt(data.access_token, params.secretKey)
-            const newEncryptedRefreshToken = encrypt(data.refresh_token, params.secretKey)
             const expiresIn = data.expires_in
 
             await fetch(`${HTTP_ENDPOINT_URL}/cm/update`, {
@@ -267,15 +256,15 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
                 accessToken: newEncryptedAccessToken,
                 apiToken: config.apiToken,
                 expiresIn: expiresIn,
-                refreshToken: newEncryptedRefreshToken,
+                refreshToken: fetchResponse.refreshToken,
                 secretName: params.secretName,
               }),
               method: 'POST',
             })
 
             return {
-              accessToken: data.access_toke,
-              refreshToken: data.refresh_token,
+              accessToken: data.access_token,
+              refreshToken: decryptedRefreshToken,
               meta: JSON.parse(fetchResponse.meta),
             }
           } catch (error) {
@@ -284,7 +273,11 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         }
       }
 
-      return {accessToken, refreshToken, meta: JSON.parse(fetchResponse.meta)}
+      return {
+        accessToken: decryptedAccessToken,
+        refreshToken: decryptedRefreshToken,
+        meta: JSON.parse(fetchResponse.meta),
+      }
     },
   } as ReturnTypeZero<T>
 }

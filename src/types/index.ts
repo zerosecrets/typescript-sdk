@@ -1,3 +1,4 @@
+export * from './expiration'
 export * from './new-config'
 export * from './old-config'
 export * from './response-body'

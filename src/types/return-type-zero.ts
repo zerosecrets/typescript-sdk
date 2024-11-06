@@ -1,4 +1,4 @@
-import {NewConfig} from 'sdk/types'
+import {Expiration, NewConfig} from 'sdk/types'
 
 export type ReturnTypeZero<T> = T extends NewConfig
   ? {
@@ -6,16 +6,16 @@ export type ReturnTypeZero<T> = T extends NewConfig
         [key: string]: {[key: string]: string} | undefined
       }>
 
-      createCredentialSecret(params: {
-        accessToken: string
-        expiresAt?: string
-        expiresIn?: string
-        meta?: Record<string, string>
-        refreshToken: string
-        secretKey: string
-        secretName: string
-        vendor: string
-      }): Promise<{message: string}>
+      createCredentialSecret(
+        params: {
+          accessToken: string
+          meta?: string
+          refreshToken: string
+          secretKey: string
+          secretName: string
+          vendor: string
+        } & Expiration,
+      ): Promise<string>
 
       fetchCredentialSecret(params: {
         clientId: string
@@ -24,8 +24,8 @@ export type ReturnTypeZero<T> = T extends NewConfig
         secretKey: string
       }): Promise<{
         accessToken: string
-        refreshToken: string
         meta: Record<string, any>
+        refreshToken: string
       }>
     }
   : {
