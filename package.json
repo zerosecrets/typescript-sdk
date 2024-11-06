@@ -1,6 +1,6 @@
 {
   "name": "@zerosecrets/zero",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "license": "ISC",
   "main": "./index.js",
   "keywords": [

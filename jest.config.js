@@ -1,26 +1,46 @@
 const {pathsToModuleNameMapper} = require('ts-jest')
-const {compilerOptions} = require('./jest.tsconfig.json')
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const config = {
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {prefix: '<rootDir>'}),
-
   coveragePathIgnorePatterns: ['<rootDir>/node_modules/'],
-
-  globals: {
-    'ts-jest': {
-      tsconfig: 'jest.tsconfig.json',
-    },
-  },
-
+  moduleDirectories: ['node_modules', 'src'],
   moduleFileExtensions: ['ts', 'js'],
 
-  moduleDirectories: ['node_modules', 'src'],
+  moduleNameMapper: pathsToModuleNameMapper(
+    {
+      'sdk/*': ['./src/*'],
+    },
+    {prefix: '<rootDir>'},
+  ),
 
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
 
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        compilerOptions: {
+          baseUrl: './',
+          esModuleInterop: true,
+          lib: [],
+          module: 'commonjs',
+          moduleResolution: 'node',
+          noImplicitUseStrict: true,
+
+          paths: {
+            'sdk/*': ['./src/*'],
+          },
+
+          removeComments: true,
+          resolveJsonModule: true,
+          sourceMap: false,
+          target: 'esnext',
+          typeRoots: ['node_modules/@types', '@types'],
+        },
+
+        exclude: ['node_modules', 'dist'],
+      },
+    ],
   },
 }
 
