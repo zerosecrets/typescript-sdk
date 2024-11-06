@@ -183,7 +183,7 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
           Promise.resolve({
             accessToken: encryptedAccessToken,
             refreshToken: encryptedRefreshToken,
-            expiresAt: '2023-11-01T10:00:00Z', // Истекшая дата
+            expiresAt: '2023-11-01T10:00:00Z',
             meta: JSON.stringify({metaKey: 'metaValue'}),
             vendor: 'google',
           }),
