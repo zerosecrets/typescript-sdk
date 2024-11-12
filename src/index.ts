@@ -1,45 +1,23 @@
-import {createCipheriv, createDecipheriv, randomBytes} from 'crypto'
 import dayjs from 'dayjs'
-import {GraphQLClient} from 'graphql-request'
-import {NewConfig, OldConfig, ReturnTypeZero} from 'sdk/types'
-import {Secrets} from './graphql/secrets'
-import {ResponseBody} from './types'
-
-const ALGORITHM = 'aes-256-gcm'
-const IV_LENGTH = 12
-const GRAPHQL_ENDPOINT_URL = 'https://core.tryzero.com/graphql'
-const HTTP_ENDPOINT_URL = 'https://http.tryzero.com'
-
-enum Vendor {
-  GOOGLE = 'google',
-}
-
-export function encrypt(text: string, key: string): string {
-  const keyBuffer = Buffer.from(key, 'hex')
-  const iv = randomBytes(IV_LENGTH)
-  const cipher = createCipheriv(ALGORITHM, keyBuffer, iv)
-  let encrypted = cipher.update(text, 'utf8', 'hex')
-  encrypted += cipher.final('hex')
-  const authTag = cipher.getAuthTag()
-  return `${iv.toString('hex')}:${encrypted}:${authTag.toString('hex')}`
-}
-
-export function decrypt(data: string, key: string): string {
-  const keyBuffer = Buffer.from(key, 'hex')
-  const [ivHex, encryptedData, authTagHex] = data.split(':')
-
-  if (!ivHex || !encryptedData || !authTagHex) {
-    throw new Error('Invalid encrypted data format')
-  }
-
-  const iv = Buffer.from(ivHex, 'hex')
-  const authTag = Buffer.from(authTagHex, 'hex')
-  const decipher = createDecipheriv(ALGORITHM, keyBuffer, iv)
-  decipher.setAuthTag(authTag)
-  let decrypted = decipher.update(encryptedData, 'hex', 'utf8')
-  decrypted += decipher.final('utf8')
-  return decrypted
-}
+import {createGithubCredentialSecret} from 'sdk/createCredentialSecret/create-github-credential-secret'
+import {createGoogleCredentialSecret} from 'sdk/createCredentialSecret/create-google-credential-secret'
+import {decrypt} from 'sdk/decrypt'
+import {encrypt} from 'sdk/encrypt'
+import {gqlClient} from 'sdk/graphql/client'
+import {FetchCredentialSecret} from 'sdk/graphql/fetchCredentialSecret'
+import {Secrets} from 'sdk/graphql/secrets'
+import {refreshGithubTokens} from 'sdk/refreshToken/refreshGithubTokens'
+import {refreshGoogleTokens} from 'sdk/refreshToken/refreshGoogleTokens'
+import {
+  FetchCredentialSecretOutput,
+  NewConfig,
+  OldConfig,
+  ResponseBody,
+  ResponseRefreshTokens,
+  ReturnTypeZero,
+  Vendor,
+} from 'sdk/types'
+import {updateSecret} from 'sdk/updateSecret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
@@ -53,10 +31,6 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
       throw new Error('Zero token should be non-empty string')
     }
 
-    const client = new GraphQLClient(GRAPHQL_ENDPOINT_URL, {
-      headers: {},
-    })
-
     return {
       /**
        * @deprecated
@@ -64,7 +38,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
        * Deprecated in favor of the new fetch function.
        */
       async fetch(): Promise<{[key: string]: {[key: string]: string} | undefined}> {
-        const response = await client.request<ResponseBody>(Secrets, config)
+        const response = await gqlClient.request<ResponseBody>(Secrets, config)
 
         if (response.errors) {
           throw new Error(response.errors[0].message)
@@ -98,9 +72,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
     async fetch(params): Promise<{
       [key: string]: {[key: string]: string} | undefined
     }> {
-      const client = new GraphQLClient(GRAPHQL_ENDPOINT_URL, {headers: {}})
-
-      const response = await client.request<ResponseBody>(Secrets, {
+      const response = await gqlClient.request<ResponseBody>(Secrets, {
         callerName: params.callerName,
         pick: params.pick,
         token: config.apiToken,
@@ -127,7 +99,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
      * @returns Success message
      * @param params
      */
-    async createCredentialSecret(params): Promise<any> {
+    async createCredentialSecret(params): Promise<string> {
       if (!params.expiresAt && !params.expiresIn) {
         throw new Error('Either expiresAt or expiresIn should be provided')
       }
@@ -152,34 +124,34 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         throw new Error('Secret name should be provided')
       }
 
-      if (params.vendor !== Vendor.GOOGLE) {
-        throw new Error('Only Google vendor is supported at the moment')
+      if (!Object.values(Vendor).map(String).includes(params.vendor)) {
+        throw new Error('Not supported vendor at the moment')
       }
 
       const encryptedAccessToken = encrypt(params.accessToken, params.secretKey)
       const encryptedRefreshToken = encrypt(params.refreshToken, params.secretKey)
-      let response
 
-      try {
-        response = await fetch(`${HTTP_ENDPOINT_URL}/cm/create`, {
-          body: JSON.stringify({
-            accessToken: encryptedAccessToken,
-            apiToken: config.apiToken,
-            expiresAt: params.expiresAt,
-            expiresIn: params.expiresIn,
-            meta: params.meta,
-            refreshToken: encryptedRefreshToken,
-            secretName: params.secretName,
-            vendor: params.vendor,
-          }),
-          method: 'POST',
+      if (params.vendor === Vendor.GOOGLE) {
+        await createGoogleCredentialSecret({
+          encryptedAccessToken,
+          encryptedRefreshToken,
+          apiToken: config.apiToken,
+          expiresAt: params.expiresAt,
+          expiresIn: params.expiresIn,
+          meta: params.meta,
+          secretName: params.secretName,
         })
-
-        if (!response.ok) {
-          throw new Error('Failed to create credential secret')
-        }
-      } catch (error) {
-        throw error
+      }
+      if (params.vendor === Vendor.GITHUB) {
+        await createGithubCredentialSecret({
+          encryptedAccessToken,
+          encryptedRefreshToken,
+          apiToken: config.apiToken,
+          expiresAt: params.expiresAt,
+          expiresIn: params.expiresIn,
+          meta: params.meta,
+          secretName: params.secretName,
+        })
       }
 
       return 'The credentials secret has been successfully created'
@@ -190,7 +162,11 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
      * @param params
      * @returns
      */
-    async fetchCredentialSecret(params): Promise<any> {
+    async fetchCredentialSecret(params): Promise<{
+      accessToken: string
+      refreshToken: string
+      meta: object
+    }> {
       if (!params.secretKey) {
         throw new Error('Secret key should be provided')
       }
@@ -210,15 +186,12 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
       let fetchResponse
 
       try {
-        fetchResponse = await fetch(`${HTTP_ENDPOINT_URL}/cm/fetch`, {
-          body: JSON.stringify({
+        fetchResponse = (
+          await gqlClient.request<{fetchCredentialSecret: FetchCredentialSecretOutput}>(FetchCredentialSecret, {
             apiToken: config.apiToken,
             secretName: params.secretName,
-          }),
-          method: 'POST',
-        })
-
-        fetchResponse = await fetchResponse.json()
+          })
+        ).fetchCredentialSecret
       } catch (error) {
         console.error(error)
         throw error
@@ -229,47 +202,42 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
       const expiresAt = dayjs(fetchResponse.expiresAt)
 
       if (dayjs().add(10, 'minutes').isAfter(expiresAt)) {
+        let newTokens: ResponseRefreshTokens | null = null
+
         if (fetchResponse.vendor === Vendor.GOOGLE) {
-          try {
-            const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-              method: 'POST',
-              headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-              body: new URLSearchParams({
-                client_id: params.clientId,
-                client_secret: params.clientSecret,
-                refresh_token: decryptedRefreshToken,
-                grant_type: 'refresh_token',
-              }).toString(),
-            })
+          newTokens = await refreshGoogleTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
 
-            const data = await tokenResponse.json()
+        if (fetchResponse.vendor === Vendor.GITHUB) {
+          newTokens = await refreshGithubTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
 
-            if (!tokenResponse.ok) {
-              throw new Error(`Error refreshing token: ${data.error_description}`)
-            }
+        if (!newTokens) {
+          throw new Error('Error refresh token')
+        }
 
-            const newEncryptedAccessToken = encrypt(data.access_token, params.secretKey)
-            const expiresIn = data.expires_in
+        await updateSecret({
+          accessToken: newTokens.accessToken,
+          apiToken: config.apiToken,
+          expiresIn: newTokens.expiresIn,
+          expiresAt: newTokens.expiresAt,
+          refreshToken: newTokens.refreshToken,
+          secretKey: params.secretKey,
+          secretName: params.secretName,
+        })
 
-            await fetch(`${HTTP_ENDPOINT_URL}/cm/update`, {
-              body: JSON.stringify({
-                accessToken: newEncryptedAccessToken,
-                apiToken: config.apiToken,
-                expiresIn: expiresIn,
-                refreshToken: fetchResponse.refreshToken,
-                secretName: params.secretName,
-              }),
-              method: 'POST',
-            })
-
-            return {
-              accessToken: data.access_token,
-              refreshToken: decryptedRefreshToken,
-              meta: JSON.parse(fetchResponse.meta),
-            }
-          } catch (error) {
-            throw error
-          }
+        return {
+          accessToken: newTokens.accessToken,
+          refreshToken: newTokens.refreshToken,
+          meta: JSON.parse(fetchResponse.meta),
         }
       }
 

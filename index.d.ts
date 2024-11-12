@@ -1,3 +1,8 @@
+import {ReturnTypeZero} from './src/types'
+import {NewConfig} from './src/types/new-config'
+import {OldConfig} from './src/types/old-config'
+import {ResponseBody} from './src/types/response-body'
+
 declare module 'graphql/secrets' {
   export const Secrets: string
 }
@@ -20,13 +25,10 @@ declare module 'types/response-body' {
 }
 
 declare module 'index' {
-  import {DeprecatedZeroClient, NewConfig, OldConfig, ZeroClient} from './types'
-
-  export const zero: (config: NewConfig | OldConfig) => ZeroClient | DeprecatedZeroClient
+  export const zero: <T extends NewConfig | OldConfig>(config: T) => ReturnTypeZero<T>
 }
 
 declare module 'tests/data/mock' {
-  import {ResponseBody} from 'types/index'
   export const secretsResponse: ResponseBody
 }
 
