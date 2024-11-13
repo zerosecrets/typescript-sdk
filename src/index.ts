@@ -1,10 +1,8 @@
 import dayjs from 'dayjs'
-import {createGithubCredentialSecret} from 'sdk/createCredentialSecret/create-github-credential-secret'
-import {createGoogleCredentialSecret} from 'sdk/createCredentialSecret/create-google-credential-secret'
 import {decrypt} from 'sdk/decrypt'
 import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
-import {FetchCredentialSecret} from 'sdk/graphql/fetchCredentialSecret'
+import {FetchCredentialSecret} from 'sdk/graphql/fetch-credential-secret'
 import {Secrets} from 'sdk/graphql/secrets'
 import {refreshGithubTokens} from 'sdk/refreshToken/refreshGithubTokens'
 import {refreshGoogleTokens} from 'sdk/refreshToken/refreshGoogleTokens'
@@ -18,6 +16,7 @@ import {
   Vendor,
 } from 'sdk/types'
 import {updateSecret} from 'sdk/updateSecret'
+import {createCredentialSecret} from './createCredentialSecret/create-credential-secret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
@@ -124,35 +123,25 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         throw new Error('Secret name should be provided')
       }
 
-      if (!Object.values(Vendor).map(String).includes(params.vendor)) {
+      const isSupportedVendor = Object.values(Vendor).map(String).includes(params.vendor)
+
+      if (!isSupportedVendor) {
         throw new Error('Not supported vendor at the moment')
       }
 
       const encryptedAccessToken = encrypt(params.accessToken, params.secretKey)
       const encryptedRefreshToken = encrypt(params.refreshToken, params.secretKey)
 
-      if (params.vendor === Vendor.GOOGLE) {
-        await createGoogleCredentialSecret({
-          encryptedAccessToken,
-          encryptedRefreshToken,
-          apiToken: config.apiToken,
-          expiresAt: params.expiresAt,
-          expiresIn: params.expiresIn,
-          meta: params.meta,
-          secretName: params.secretName,
-        })
-      }
-      if (params.vendor === Vendor.GITHUB) {
-        await createGithubCredentialSecret({
-          encryptedAccessToken,
-          encryptedRefreshToken,
-          apiToken: config.apiToken,
-          expiresAt: params.expiresAt,
-          expiresIn: params.expiresIn,
-          meta: params.meta,
-          secretName: params.secretName,
-        })
-      }
+      await createCredentialSecret({
+        encryptedAccessToken,
+        encryptedRefreshToken,
+        apiToken: config.apiToken,
+        expiresAt: params.expiresAt,
+        expiresIn: params.expiresIn,
+        meta: params.meta,
+        secretName: params.secretName,
+        vendor: params.vendor,
+      })
 
       return 'The credentials secret has been successfully created'
     },

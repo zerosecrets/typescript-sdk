@@ -1,6 +1,6 @@
 import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
-import {UpdateCredentialSecret} from 'sdk/graphql/updateCredentialSecret'
+import {UpdateCredentialSecret} from 'sdk/graphql/update-credential-secret'
 import {ResponseSuccess} from 'sdk/types'
 
 export const updateSecret = async (params: {
