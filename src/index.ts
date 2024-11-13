@@ -4,8 +4,8 @@ import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
 import {FetchCredentialSecret} from 'sdk/graphql/fetch-credential-secret'
 import {Secrets} from 'sdk/graphql/secrets'
-import {refreshGithubTokens} from 'sdk/refreshToken/refreshGithubTokens'
-import {refreshGoogleTokens} from 'sdk/refreshToken/refreshGoogleTokens'
+import {refreshGithubTokens} from 'sdk/refresh-token/refresh-github-tokens'
+import {refreshGoogleTokens} from 'sdk/refresh-token/refresh-google-tokens'
 import {
   FetchCredentialSecretOutput,
   NewConfig,
@@ -16,7 +16,7 @@ import {
   Vendor,
 } from 'sdk/types'
 import {updateSecret} from 'sdk/updateSecret'
-import {createCredentialSecret} from './createCredentialSecret/create-credential-secret'
+import {createCredentialSecret} from './create-credential-secret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
