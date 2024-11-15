@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
+import {createCredentialSecret} from 'sdk/create-credential-secret'
 import {decrypt} from 'sdk/decrypt'
 import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
 import {FetchCredentialSecret} from 'sdk/graphql/fetch-credential-secret'
 import {Secrets} from 'sdk/graphql/secrets'
-import {refreshGithubTokens} from 'sdk/refresh-token/refresh-github-tokens'
-import {refreshGoogleTokens} from 'sdk/refresh-token/refresh-google-tokens'
+import {refreshGithubTokens, refreshGoogleTokens, refreshSlackTokens} from 'sdk/refresh-token'
 import {
   FetchCredentialSecretOutput,
   NewConfig,
@@ -16,7 +16,6 @@ import {
   Vendor,
 } from 'sdk/types'
 import {updateSecret} from 'sdk/updateSecret'
-import {createCredentialSecret} from './create-credential-secret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
@@ -203,6 +202,14 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
 
         if (fetchResponse.vendor === Vendor.GITHUB) {
           newTokens = await refreshGithubTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.SLACK) {
+          newTokens = await refreshSlackTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
