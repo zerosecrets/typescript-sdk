@@ -1,15 +1,6 @@
 import {GitHub} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
-type GitHubRefreshResponse = {
-  access_token: string
-  expires_in: number
-  refresh_token: string
-  refresh_token_expires_in: number
-  scope: string
-  token_type: 'bearer'
-}
-
 export const refreshGithubTokens = async (params: {
   clientId: string
   clientSecret: string
@@ -26,7 +17,7 @@ export const refreshGithubTokens = async (params: {
     return {
       accessToken: tokens.accessToken(),
       refreshToken: tokens.refreshToken(),
-      expiresIn: tokens.accessTokenExpiresInSeconds()
+      expiresIn: tokens.accessTokenExpiresInSeconds(),
     }
   } catch (error) {
     throw error
