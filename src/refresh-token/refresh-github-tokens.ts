@@ -10,14 +10,6 @@ type GitHubRefreshResponse = {
   token_type: 'bearer'
 }
 
-const guard = (obj: {}): obj is GitHubRefreshResponse => {
-  if ('access_token' in obj && 'refresh_token' in obj) {
-    return true
-  }
-
-  return false
-}
-
 export const refreshGithubTokens = async (params: {
   clientId: string
   clientSecret: string
@@ -25,16 +17,16 @@ export const refreshGithubTokens = async (params: {
 }): Promise<ResponseRefreshTokens> => {
   try {
     const github = new GitHub(params.clientId, params.clientSecret, null)
-    const {data} = await github.refreshAccessToken(params.decryptedRefreshToken)
+    const tokens = await github.refreshAccessToken(params.decryptedRefreshToken)
 
-    if (!data || !guard(data)) {
-      throw new Error(`Invalid refresh token response type: ${JSON.stringify(data)}`)
+    if (!tokens.accessToken() || !tokens.refreshToken()) {
+      throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
     }
 
     return {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
+      accessToken: tokens.accessToken(),
+      refreshToken: tokens.refreshToken(),
+      expiresIn: tokens.accessTokenExpiresInSeconds()
     }
   } catch (error) {
     throw error
