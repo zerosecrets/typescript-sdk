@@ -5,7 +5,17 @@ import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
 import {FetchCredentialSecret} from 'sdk/graphql/fetch-credential-secret'
 import {Secrets} from 'sdk/graphql/secrets'
-import {refreshGithubTokens, refreshGoogleTokens, refreshSlackTokens} from 'sdk/refresh-token'
+import {
+  refreshBitbucketTokens,
+  refreshDiscordTokens,
+  refreshFigmaTokens,
+  refreshGithubTokens,
+  refreshGoogleTokens,
+  refreshLinkedinTokens,
+  refreshOAuth0Tokens,
+  refreshSlackTokens,
+  refreshZoomTokens,
+} from 'sdk/refresh-token'
 import {
   FetchCredentialSecretOutput,
   NewConfig,
@@ -210,6 +220,54 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
 
         if (fetchResponse.vendor === Vendor.SLACK) {
           newTokens = await refreshSlackTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.BITBUCKET) {
+          newTokens = await refreshBitbucketTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.DISCORD) {
+          newTokens = await refreshDiscordTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.FIGMA) {
+          newTokens = await refreshFigmaTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.LINKEDIN) {
+          newTokens = await refreshLinkedinTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.OAUTH0) {
+          newTokens = await refreshOAuth0Tokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.ZOOM) {
+          newTokens = await refreshZoomTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
