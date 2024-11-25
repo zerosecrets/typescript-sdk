@@ -13,7 +13,6 @@ import {
   refreshGoogleTokens,
   refreshLinkedinTokens,
   refreshOAuth0Tokens,
-  refreshSlackTokens,
   refreshZoomTokens,
 } from 'sdk/refresh-token'
 import {
@@ -212,14 +211,6 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
 
         if (fetchResponse.vendor === Vendor.GITHUB) {
           newTokens = await refreshGithubTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.SLACK) {
-          newTokens = await refreshSlackTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
