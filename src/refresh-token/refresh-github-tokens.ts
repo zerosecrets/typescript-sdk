@@ -1,3 +1,4 @@
+import {GitHub} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshGithubTokens = async (params: {
@@ -6,32 +7,17 @@ export const refreshGithubTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    const response = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
+    const github = new GitHub(params.clientId, params.clientSecret, null)
+    const tokens = await github.refreshAccessToken(params.decryptedRefreshToken)
 
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-
-      body: new URLSearchParams({
-        client_id: params.clientId,
-        client_secret: params.clientSecret,
-        refresh_token: params.decryptedRefreshToken,
-        grant_type: 'refresh_token',
-      }).toString(),
-    })
-
-    const data = await response.json()
-
-    if (!response.ok || data.error_description) {
-      throw new Error(`Error refreshing token: ${data.error_description}`)
+    if (!tokens.accessToken() || !tokens.refreshToken()) {
+      throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
     }
 
     return {
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiresIn: data.expires_in,
+      accessToken: tokens.accessToken(),
+      refreshToken: tokens.refreshToken(),
+      expiresIn: tokens.accessTokenExpiresInSeconds(),
     }
   } catch (error) {
     throw error
