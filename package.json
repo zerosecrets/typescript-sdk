@@ -7,8 +7,7 @@
     "typecheck": "tsc",
     "lint": "prettier -c '**'",
     "format": "prettier -w '**'",
-    "build": "node ./esbuild.config.js",
-    "build:types": "tsc --project tsconfig.json && tsc --project tsconfig.esm.json"
+    "build": "tsc --project tsconfig.json && tsc --project tsconfig.esm.json && node ./esbuild.config.js"
   },
   "dependencies": {
     "graphql-request": "5.2.0",

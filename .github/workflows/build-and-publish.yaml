@@ -45,17 +45,9 @@ jobs:
         with:
           command: npm run test -- --all --verbose
 
-  build-types:
-    name: Generate types
-    runs-on: ubuntu-latest
-    steps:
-      - uses: ottofeller/github-actions/npm-run@main
-        with:
-          command: npm run build:types
-
   publish-npm:
     name: Build and publish npm package
-    needs: [set-commit-hash, typecheck, lint, test, build-types]
+    needs: [set-commit-hash, typecheck, lint, test]
     runs-on: ubuntu-latest
     steps:
       - uses: ottofeller/github-actions/publish-npm@main

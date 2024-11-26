@@ -3,5 +3,6 @@ src
 node_modules
 package-lock.json
 *.config.js
-*tsconfig.json
+tsconfig.json
+tsconfig.esm.json
 .github
