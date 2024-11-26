@@ -49,13 +49,13 @@ jobs:
     name: Generate types
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Generate TypeScript declaration files
-        run: npm run build:types
+      - uses: ottofeller/github-actions/npm-run@main
+        with:
+          command: npm run build:types
 
   publish-npm:
     name: Build and publish npm package
-    needs: [set-commit-hash, typecheck, lint, test]
+    needs: [set-commit-hash, typecheck, lint, test, build-types]
     runs-on: ubuntu-latest
     steps:
       - uses: ottofeller/github-actions/publish-npm@main
