@@ -13,7 +13,7 @@ jobs:
     outputs:
       commit_hash: ${{ steps.commit-hash.outputs.commit_hash }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout the repo
       - id: commit-hash
         name: Grab the commit hash
@@ -44,6 +44,14 @@ jobs:
       - uses: ottofeller/github-actions/npm-run@main
         with:
           command: npm run test -- --all --verbose
+
+  build-types:
+    name: Generate types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate TypeScript declaration files
+        run: npm run build:types
 
   publish-npm:
     name: Build and publish npm package
