@@ -5,15 +5,16 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "outFile": "index.d.ts",
+    "outDir": "./dist/cjs",
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "sdk/*": ["./src/*"]
+      "sdk/*": ["src/*"]
     }
   },
-  "exclude": ["index.d.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

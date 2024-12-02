@@ -13,7 +13,7 @@ jobs:
     outputs:
       commit_hash: ${{ steps.commit-hash.outputs.commit_hash }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout the repo
       - id: commit-hash
         name: Grab the commit hash
