@@ -20,3 +20,6 @@ backend/treeofstars/settings_local.py
 .DS_Store
 node_modules
 tsconfig.tsbuildinfo
+
+# Build
+dist/
