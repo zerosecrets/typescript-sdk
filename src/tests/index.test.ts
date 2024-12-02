@@ -157,6 +157,7 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
       .mockResolvedValueOnce({
         json: () =>
           Promise.resolve({access_token: 'newAccessToken', refresh_token: 'newRefreshToken', expires_in: 3600}),
+        ok: true,
       })
 
     const sdk = zero({apiToken: 'token'})
@@ -168,7 +169,7 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
       secretKey: secretKey,
     })
 
-    expect(response).toHaveProperty('accessToken', 'accessToken')
+    expect(response).toHaveProperty('accessToken', 'newAccessToken')
     expect(response).toHaveProperty('refreshToken', 'refreshToken')
     expect(response.meta).toEqual({metaKey: 'metaValue'})
   })
