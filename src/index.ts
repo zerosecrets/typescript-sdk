@@ -11,8 +11,6 @@ import {
   refreshFigmaTokens,
   refreshGithubTokens,
   refreshGoogleTokens,
-  refreshLinkedinTokens,
-  refreshOAuth0Tokens,
   refreshZoomTokens,
 } from 'sdk/refresh-token'
 import {
