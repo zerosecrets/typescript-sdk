@@ -7,7 +7,6 @@ export const refreshZoomTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    // TODO  redirect
     const zoom = new Zoom(params.clientId, params.clientSecret, '')
     const tokens = await zoom.refreshAccessToken(params.decryptedRefreshToken)
 

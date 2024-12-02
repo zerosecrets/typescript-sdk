@@ -7,7 +7,6 @@ export const refreshGitlabTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    // TODO  domain
     const gitlab = new GitLab('', params.clientId, params.clientSecret, '')
     const tokens = await gitlab.refreshAccessToken(params.decryptedRefreshToken)
 

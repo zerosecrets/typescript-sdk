@@ -7,7 +7,6 @@ export const refreshFigmaTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    // TODO  redirect
     const figma = new Figma(params.clientId, params.clientSecret, '')
     const tokens = await figma.refreshAccessToken(params.decryptedRefreshToken)
 

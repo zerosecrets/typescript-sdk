@@ -7,7 +7,6 @@ export const refreshDiscordTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    // TODO  redirect
     const discord = new Discord(params.clientId, params.clientSecret, '')
     const tokens = await discord.refreshAccessToken(params.decryptedRefreshToken)
 

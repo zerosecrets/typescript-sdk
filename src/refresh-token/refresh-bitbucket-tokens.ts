@@ -7,7 +7,6 @@ export const refreshBitbucketTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    // TODO  redirect
     const bitbucket = new Bitbucket(params.clientId, params.clientSecret, '')
     const tokens = await bitbucket.refreshAccessToken(params.decryptedRefreshToken)
 
