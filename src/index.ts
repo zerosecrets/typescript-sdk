@@ -241,22 +241,6 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
           })
         }
 
-        if (fetchResponse.vendor === Vendor.LINKEDIN) {
-          newTokens = await refreshLinkedinTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.OAUTH0) {
-          newTokens = await refreshOAuth0Tokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
         if (fetchResponse.vendor === Vendor.ZOOM) {
           newTokens = await refreshZoomTokens({
             clientId: params.clientId,
