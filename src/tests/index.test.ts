@@ -1,4 +1,5 @@
-import {encrypt, zero} from 'sdk/index'
+import {encrypt} from 'sdk/encrypt'
+import {zero} from 'sdk/index'
 import {secretsResponse} from 'sdk/tests/data/mock'
 
 global.fetch = jest.fn()

@@ -10,8 +10,9 @@
     "build": "tsc --project tsconfig.json && tsc --project tsconfig.esm.json && node ./esbuild.config.js"
   },
   "dependencies": {
-    "graphql-request": "5.2.0",
-    "dayjs": "1.11.13"
+    "arctic": "2.2.2",
+    "dayjs": "1.11.13",
+    "graphql-request": "5.2.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.13",
