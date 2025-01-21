@@ -1,4 +1,4 @@
-import {GitLab} from 'arctic'
+import {Reddit} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshRedditTokens = async (params: {
@@ -7,8 +7,8 @@ export const refreshRedditTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    const gitlab = new GitLab('', params.clientId, params.clientSecret, '')
-    const tokens = await gitlab.refreshAccessToken(params.decryptedRefreshToken)
+    const reddit = new Reddit(params.clientId, params.clientSecret, '')
+    const tokens = await reddit.refreshAccessToken(params.decryptedRefreshToken)
     const accessToken = tokens.accessToken()
     const refreshToken = tokens.refreshToken()
 
