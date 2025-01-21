@@ -12,7 +12,6 @@ import {
   refreshGithubTokens,
   refreshGoogleTokens,
   refreshRedditTokens,
-  refreshTwitterTokens,
   refreshZoomTokens,
 } from 'sdk/refresh-token'
 import {
