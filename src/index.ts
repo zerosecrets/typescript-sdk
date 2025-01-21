@@ -11,6 +11,8 @@ import {
   refreshFigmaTokens,
   refreshGithubTokens,
   refreshGoogleTokens,
+  refreshRedditTokens,
+  refreshTwitterTokens,
   refreshZoomTokens,
 } from 'sdk/refresh-token'
 import {
@@ -241,6 +243,14 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
 
         if (fetchResponse.vendor === Vendor.ZOOM) {
           newTokens = await refreshZoomTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.REDDIT) {
+          newTokens = await refreshRedditTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
