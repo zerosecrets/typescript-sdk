@@ -5,4 +5,5 @@ export enum Vendor {
   DISCORD = 'discord',
   FIGMA = 'figma',
   ZOOM = 'zoom',
+  TWITTER = 'twitter',
 }
