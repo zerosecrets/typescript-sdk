@@ -10,13 +10,13 @@ export const refreshBitbucketTokens = async (params: {
     const bitbucket = new Bitbucket(params.clientId, params.clientSecret, '')
     const tokens = await bitbucket.refreshAccessToken(params.decryptedRefreshToken)
 
-    if (!tokens.accessToken()) {
+    if (!tokens.accessToken() || !tokens.refreshToken()) {
       throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
     }
 
     return {
       accessToken: tokens.accessToken(),
-      refreshToken: params.decryptedRefreshToken,
+      refreshToken: tokens.refreshToken(),
       expiresIn: tokens.accessTokenExpiresInSeconds(),
     }
   } catch (error) {
