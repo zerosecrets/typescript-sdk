@@ -1,4 +1,4 @@
-import {LinkedIn, Zoom} from 'arctic'
+import {Zoom} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshZoomTokens = async (params: {
