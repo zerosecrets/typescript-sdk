@@ -5,17 +5,7 @@ import {encrypt} from 'sdk/encrypt'
 import {gqlClient} from 'sdk/graphql/client'
 import {FetchCredentialSecret} from 'sdk/graphql/fetch-credential-secret'
 import {Secrets} from 'sdk/graphql/secrets'
-import {
-  refreshBitbucketTokens,
-  refreshDiscordTokens,
-  refreshFigmaTokens,
-  refreshGithubTokens,
-  refreshGitlabTokens,
-  refreshGoogleTokens,
-  refreshRedditTokens,
-  refreshTwitterTokens,
-  refreshZoomTokens,
-} from 'sdk/refresh-token'
+import {refreshTokens} from 'sdk/refresh-tokens'
 import {
   FetchCredentialSecretOutput,
   NewConfig,
@@ -202,77 +192,11 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
       if (dayjs().add(10, 'minutes').isAfter(expiresAt)) {
         let newTokens: ResponseRefreshTokens | null = null
 
-        if (fetchResponse.vendor === Vendor.BITBUCKET) {
-          newTokens = await refreshBitbucketTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.DISCORD) {
-          newTokens = await refreshDiscordTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.FIGMA) {
-          newTokens = await refreshFigmaTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.GITHUB) {
-          newTokens = await refreshGithubTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.GITLAB) {
-          newTokens = await refreshGitlabTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.GOOGLE) {
-          newTokens = await refreshGoogleTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.REDDIT) {
-          newTokens = await refreshRedditTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.TWITTER) {
-          newTokens = await refreshTwitterTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.ZOOM) {
-          newTokens = await refreshZoomTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
+        newTokens = await refreshTokens[fetchResponse.vendor as Vendor]({
+          clientId: params.clientId,
+          clientSecret: params.clientSecret,
+          decryptedRefreshToken,
+        })
 
         if (!newTokens) {
           throw new Error('Error refresh token')
