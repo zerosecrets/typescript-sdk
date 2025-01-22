@@ -1,4 +1,3 @@
-import {Bitbucket, Figma} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshFigmaTokens = async (params: {
@@ -7,17 +6,38 @@ export const refreshFigmaTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    const figma = new Figma(params.clientId, params.clientSecret, '')
-    const tokens = await figma.refreshAccessToken(params.decryptedRefreshToken)
+    const url = 'https://api.figma.com/v1/oauth/refresh'
+    const authHeader = Buffer.from(`${params.clientId}:${params.clientSecret}`).toString('base64')
 
-    if (!tokens.accessToken()) {
-      throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
+    const body = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: params.decryptedRefreshToken,
+    })
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: body.toString(),
+
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${authHeader}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`)
+    }
+
+    const data: {access_token: string; expires_in: number} = await response.json()
+
+    if (!data.access_token || !data.expires_in) {
+      throw new Error('Invalid refresh figma token')
     }
 
     return {
-      accessToken: tokens.accessToken(),
+      accessToken: data.access_token,
       refreshToken: params.decryptedRefreshToken,
-      expiresIn: tokens.accessTokenExpiresInSeconds(),
+      expiresIn: data.expires_in,
     }
   } catch (error) {
     throw error
