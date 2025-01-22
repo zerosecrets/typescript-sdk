@@ -1,4 +1,4 @@
-import {Bitbucket, Figma} from 'arctic'
+import {Figma} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshFigmaTokens = async (params: {
@@ -9,13 +9,14 @@ export const refreshFigmaTokens = async (params: {
   try {
     const figma = new Figma(params.clientId, params.clientSecret, '')
     const tokens = await figma.refreshAccessToken(params.decryptedRefreshToken)
+    const accessToken = tokens.accessToken()
 
-    if (!tokens.accessToken()) {
+    if (!accessToken) {
       throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
     }
 
     return {
-      accessToken: tokens.accessToken(),
+      accessToken,
       refreshToken: params.decryptedRefreshToken,
       expiresIn: tokens.accessTokenExpiresInSeconds(),
     }
