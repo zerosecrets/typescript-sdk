@@ -3,6 +3,7 @@ export enum Vendor {
   DISCORD = 'discord',
   FIGMA = 'figma',
   GITHUB = 'gitHub',
+  GITLAB = 'gitLab',
   GOOGLE = 'google',
   REDDIT = 'reddit',
   TWITTER = 'twitter',

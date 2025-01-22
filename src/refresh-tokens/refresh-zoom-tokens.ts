@@ -1,14 +1,14 @@
-import {Discord} from 'arctic'
+import {Zoom} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
-export const refreshDiscordTokens = async (params: {
+export const refreshZoomTokens = async (params: {
   clientId: string
   clientSecret: string
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    const discord = new Discord(params.clientId, params.clientSecret, '')
-    const tokens = await discord.refreshAccessToken(params.decryptedRefreshToken)
+    const zoom = new Zoom(params.clientId, params.clientSecret, '')
+    const tokens = await zoom.refreshAccessToken(params.decryptedRefreshToken)
 
     if (!tokens.accessToken()) {
       throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
