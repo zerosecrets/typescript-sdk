@@ -7,16 +7,18 @@ export const refreshGitlabTokens = async (params: {
   decryptedRefreshToken: string
 }): Promise<ResponseRefreshTokens> => {
   try {
-    const gitlab = new GitLab('', params.clientId, params.clientSecret, '')
+    const gitlab = new GitLab('https://gitlab.com', params.clientId, params.clientSecret, '')
     const tokens = await gitlab.refreshAccessToken(params.decryptedRefreshToken)
+    const accessToken = tokens.accessToken()
+    const refreshToken = tokens.refreshToken()
 
-    if (!tokens.accessToken()) {
+    if (!accessToken || !refreshToken) {
       throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
     }
 
     return {
-      accessToken: tokens.accessToken(),
-      refreshToken: params.decryptedRefreshToken,
+      accessToken,
+      refreshToken,
       expiresIn: tokens.accessTokenExpiresInSeconds(),
     }
   } catch (error) {
