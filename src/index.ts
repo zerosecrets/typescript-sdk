@@ -10,6 +10,7 @@ import {
   refreshDiscordTokens,
   refreshFigmaTokens,
   refreshGithubTokens,
+  refreshGitlabTokens,
   refreshGoogleTokens,
   refreshRedditTokens,
   refreshTwitterTokens,
@@ -201,22 +202,6 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
       if (dayjs().add(10, 'minutes').isAfter(expiresAt)) {
         let newTokens: ResponseRefreshTokens | null = null
 
-        if (fetchResponse.vendor === Vendor.GOOGLE) {
-          newTokens = await refreshGoogleTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
-        if (fetchResponse.vendor === Vendor.GITHUB) {
-          newTokens = await refreshGithubTokens({
-            clientId: params.clientId,
-            clientSecret: params.clientSecret,
-            decryptedRefreshToken,
-          })
-        }
-
         if (fetchResponse.vendor === Vendor.BITBUCKET) {
           newTokens = await refreshBitbucketTokens({
             clientId: params.clientId,
@@ -241,8 +226,32 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
           })
         }
 
-        if (fetchResponse.vendor === Vendor.ZOOM) {
-          newTokens = await refreshZoomTokens({
+        if (fetchResponse.vendor === Vendor.GITHUB) {
+          newTokens = await refreshGithubTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.GITLAB) {
+          newTokens = await refreshGitlabTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.GOOGLE) {
+          newTokens = await refreshGoogleTokens({
+            clientId: params.clientId,
+            clientSecret: params.clientSecret,
+            decryptedRefreshToken,
+          })
+        }
+
+        if (fetchResponse.vendor === Vendor.REDDIT) {
+          newTokens = await refreshRedditTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
@@ -257,8 +266,8 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
           })
         }
 
-        if (fetchResponse.vendor === Vendor.REDDIT) {
-          newTokens = await refreshRedditTokens({
+        if (fetchResponse.vendor === Vendor.ZOOM) {
+          newTokens = await refreshZoomTokens({
             clientId: params.clientId,
             clientSecret: params.clientSecret,
             decryptedRefreshToken,
