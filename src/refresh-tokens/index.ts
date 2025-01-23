@@ -1,3 +1,4 @@
+import {refreshAuth0Tokens} from 'sdk/refresh-tokens/refresh-auth0-tokens'
 import {refreshBitbucketTokens} from 'sdk/refresh-tokens/refresh-bitbucket-tokens'
 import {refreshDiscordTokens} from 'sdk/refresh-tokens/refresh-discord-tokens'
 import {refreshDropboxTokens} from 'sdk/refresh-tokens/refresh-dropbox-tokens'
@@ -17,8 +18,10 @@ export const refreshTokens: Record<
     clientId: string
     clientSecret: string
     decryptedRefreshToken: string
+    meta?: Record<string, string>
   }) => Promise<ResponseRefreshTokens | null>
 > = {
+  [Vendor.AUTH0]: refreshAuth0Tokens,
   [Vendor.BITBUCKET]: refreshBitbucketTokens,
   [Vendor.DISCORD]: refreshDiscordTokens,
   [Vendor.DROPBOX]: refreshDropboxTokens,
