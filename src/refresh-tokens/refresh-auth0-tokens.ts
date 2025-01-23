@@ -5,14 +5,14 @@ export const refreshAuth0Tokens = async (params: {
   clientId: string
   clientSecret: string
   decryptedRefreshToken: string
-  extra?: Record<string, string>
+  meta?: Record<string, string>
 }): Promise<ResponseRefreshTokens> => {
   let domain
 
-  if (params.extra && 'domain' in params.extra) {
-    domain = params.extra.domain
+  if (params.meta && 'domain' in params.meta) {
+    domain = params.meta.domain
   } else {
-    throw new Error('Please add `domain` to `extra` parameters')
+    throw new Error('Please add `domain` to `meta` parameter')
   }
 
   try {
