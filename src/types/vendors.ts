@@ -1,6 +1,7 @@
 export enum Vendor {
   BITBUCKET = 'bitbucket',
   DISCORD = 'discord',
+  DROPBOX = 'dropbox',
   FIGMA = 'figma',
   GITHUB = 'gitHub',
   GITLAB = 'gitLab',
