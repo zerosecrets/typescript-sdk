@@ -1,4 +1,4 @@
-import {Dropbox, GitHub} from 'arctic'
+import {Dropbox} from 'arctic'
 import {ResponseRefreshTokens} from 'sdk/types'
 
 export const refreshDropboxTokens = async (params: {
