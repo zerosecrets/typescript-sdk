@@ -1,4 +1,5 @@
 export enum Vendor {
+  AUTH0 = 'auth0',
   BITBUCKET = 'bitbucket',
   DISCORD = 'discord',
   DROPBOX = 'dropbox',

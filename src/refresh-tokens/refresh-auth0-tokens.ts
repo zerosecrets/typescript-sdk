@@ -1,0 +1,36 @@
+import {Auth0} from 'arctic'
+import {ResponseRefreshTokens} from 'sdk/types'
+
+export const refreshAuth0Tokens = async (params: {
+  clientId: string
+  clientSecret: string
+  decryptedRefreshToken: string
+  extra?: Record<string, string>
+}): Promise<ResponseRefreshTokens> => {
+  let domain
+
+  if (params.extra && 'domain' in params.extra) {
+    domain = params.extra.domain
+  } else {
+    throw new Error('Please add `domain` to `extra` parameters')
+  }
+
+  try {
+    const auth0 = new Auth0(domain, params.clientId, params.clientSecret, '')
+    const tokens = await auth0.refreshAccessToken(params.decryptedRefreshToken)
+    const accessToken = tokens.accessToken()
+    const refreshToken = tokens.refreshToken()
+
+    if (!accessToken || !refreshToken) {
+      throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
+    }
+
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn: tokens.accessTokenExpiresInSeconds(),
+    }
+  } catch (error) {
+    throw error
+  }
+}
