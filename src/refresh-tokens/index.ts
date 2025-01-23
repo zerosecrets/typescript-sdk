@@ -1,6 +1,6 @@
 import {refreshBitbucketTokens} from 'sdk/refresh-tokens/refresh-bitbucket-tokens'
 import {refreshDiscordTokens} from 'sdk/refresh-tokens/refresh-discord-tokens'
-import {refreshDropboxTokens} from './refresh-dropbox-tokens'
+import {refreshDropboxTokens} from 'sdk/refresh-tokens/refresh-dropbox-tokens'
 import {refreshFigmaTokens} from 'sdk/refresh-tokens/refresh-figma-tokens'
 import {refreshGithubTokens} from 'sdk/refresh-tokens/refresh-github-tokens'
 import {refreshGitlabTokens} from 'sdk/refresh-tokens/refresh-gitlab-tokens'
