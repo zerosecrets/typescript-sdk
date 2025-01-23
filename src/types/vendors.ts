@@ -6,6 +6,7 @@ export enum Vendor {
   GITHUB = 'gitHub',
   GITLAB = 'gitLab',
   GOOGLE = 'google',
+  LINKEDIN = 'linkedIn',
   REDDIT = 'reddit',
   TWITTER = 'twitter',
   ZOOM = 'zoom',
