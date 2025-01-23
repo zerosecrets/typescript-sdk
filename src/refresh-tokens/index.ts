@@ -18,7 +18,7 @@ export const refreshTokens: Record<
     clientId: string
     clientSecret: string
     decryptedRefreshToken: string
-    extra?: Record<string, string>
+    meta?: Record<string, string>
   }) => Promise<ResponseRefreshTokens | null>
 > = {
   [Vendor.AUTH0]: refreshAuth0Tokens,
