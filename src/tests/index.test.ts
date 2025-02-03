@@ -1,47 +1,44 @@
-import {encrypt} from 'sdk/encrypt'
+import {gqlClient} from 'sdk/graphql/client'
 import {zero} from 'sdk/index'
-import {secretsResponse} from 'sdk/tests/data/mock'
+import {refreshTokens} from 'sdk/refresh-tokens'
+import {Vendor} from 'sdk/types'
+import * as updateSecretModule from 'sdk/updateSecret'
+import {secretsResponse} from './data/mock'
 
-global.fetch = jest.fn()
+jest.mock('sdk/decrypt', () => ({
+  decrypt: (text: string) => {
+    return text
+  },
+}))
 
-jest.mock('graphql-request', () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual('graphql-request'),
+jest.mock('arctic', () => ({
+  Auth0: jest.fn(),
+  Bitbucket: jest.fn(),
+  Discord: jest.fn(),
+  Dropbox: jest.fn(),
+  Figma: jest.fn(),
+  Github: jest.fn(),
+  GitLab: jest.fn(),
+  Google: jest.fn(),
+  LinkedIn: jest.fn(),
+  Reddit: jest.fn(),
+  Twitter: jest.fn(),
+  Zoom: jest.fn(),
+}))
 
-    GraphQLClient: jest.fn().mockImplementation(() => ({
-      request: jest.fn().mockImplementation((_, variables) => {
-        if (variables.pick.length === 0) {
-          return Promise.resolve({
-            data: null,
+jest.mock('sdk/graphql/client')
+jest.mock('sdk/refresh-tokens/refresh-google-tokens')
 
-            errors: [
-              {
-                message: 'Could not establish connection with database',
-                locations: [{line: 2, column: 2}],
-                path: ['secrets'],
-                extensions: {
-                  internal_error:
-                    'Error occurred while creating a new object: error connecting to server: Connection refused (os error 61)',
-                },
-              },
-            ],
-          })
-        }
-
-        if (variables.token !== 'token') {
-          return {secrets: []}
-        }
-
-        return Promise.resolve(secretsResponse)
-      }),
-    })),
-  }
-})
+const mockedGqlClient = jest.mocked(gqlClient)
 
 describe('Zero TypeScript SDK - fetch', () => {
   beforeEach(() => {
-    ;(fetch as jest.Mock).mockReset()
+    jest.resetAllMocks()
+  })
+
+  it('fetch by old config', async () => {
+    mockedGqlClient.request.mockResolvedValueOnce(secretsResponse)
+    await expect(zero({token: '123', pick: ['aws']}).fetch()).resolves.toEqual({aws: {name: 'value', name2: 'value2'}})
   })
 
   it('requires token to be non-empty string', () => {
@@ -53,6 +50,8 @@ describe('Zero TypeScript SDK - fetch', () => {
   })
 
   it('does a GraphQL request which queries the requested APIs', async () => {
+    mockedGqlClient.request.mockResolvedValueOnce(secretsResponse)
+
     await expect(
       zero({apiToken: 'token'}).fetch({
         pick: ['aws'],
@@ -61,6 +60,8 @@ describe('Zero TypeScript SDK - fetch', () => {
   })
 
   it('does a GraphQL request with wrong vars (expect empty body)', async () => {
+    mockedGqlClient.request.mockResolvedValueOnce({secrets: []})
+
     await expect(
       zero({apiToken: 'invalid token'}).fetch({
         pick: ['aws'],
@@ -69,17 +70,20 @@ describe('Zero TypeScript SDK - fetch', () => {
   })
 
   it('raises an exception if GraphQL API responds with error', async () => {
+    const errorMessage = 'Could not establish connection with database'
+    mockedGqlClient.request.mockResolvedValueOnce({errors: [{message: errorMessage}]})
+
     await expect(
       zero({apiToken: 'token'}).fetch({
         pick: [],
       }),
-    ).rejects.toThrow('Could not establish connection with database')
+    ).rejects.toThrow(errorMessage)
   })
 })
 
 describe('Zero TypeScript SDK - createCredentialSecret', () => {
   beforeEach(() => {
-    ;(fetch as jest.Mock).mockReset()
+    jest.resetAllMocks()
   })
 
   it('throws an error if neither expiresAt nor expiresIn are provided', async () => {
@@ -98,12 +102,14 @@ describe('Zero TypeScript SDK - createCredentialSecret', () => {
   })
 
   it('successfully creates a credential secret', async () => {
-    ;(fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve('The credentials secret has been successfully created'),
-    })
-
     const sdk = zero({apiToken: 'token'})
+
+    mockedGqlClient.request.mockResolvedValueOnce({
+      createCredentialSecret: {
+        success: true,
+        message: 'The credentials secret has been successfully created',
+      },
+    })
 
     const response = await sdk.createCredentialSecret({
       accessToken: 'access',
@@ -115,14 +121,12 @@ describe('Zero TypeScript SDK - createCredentialSecret', () => {
     })
 
     expect(response).toEqual('The credentials secret has been successfully created')
-
-    expect(fetch).toHaveBeenCalledWith('https://http.tryzero.com/cm/create', expect.objectContaining({method: 'POST'}))
   })
 })
 
 describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
   beforeEach(() => {
-    ;(fetch as jest.Mock).mockReset()
+    jest.resetAllMocks()
   })
 
   it('throws an error if secret key length is invalid', async () => {
@@ -139,61 +143,46 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
   })
 
   it('successfully fetches and decrypts a credential secret', async () => {
-    const secretKey = 'a'.repeat(64)
-    const encryptedAccessToken = encrypt('accessToken', secretKey)
-    const encryptedRefreshToken = encrypt('refreshToken', secretKey)
+    const EXPECT_DATA = {
+      accessToken: 'newAccessToken',
+      expiresAt: '3024-11-10T10:00:00Z',
+      meta: '{"metaKey": "metaValue"}',
+      refreshToken: 'newRefreshToken',
+      vendor: Vendor.GOOGLE,
+    }
 
-    ;(fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            accessToken: encryptedAccessToken,
-            refreshToken: encryptedRefreshToken,
-            expiresAt: '2024-11-10T10:00:00Z',
-            meta: JSON.stringify({metaKey: 'metaValue'}),
-            vendor: 'google',
-          }),
-      })
-      .mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({access_token: 'newAccessToken', refresh_token: 'newRefreshToken', expires_in: 3600}),
-        ok: true,
-      })
-
+    mockedGqlClient.request.mockResolvedValueOnce({fetchCredentialSecret: EXPECT_DATA})
     const sdk = zero({apiToken: 'token'})
 
     const response = await sdk.fetchCredentialSecret({
       clientId: 'clientId',
       clientSecret: 'clientSecret',
       secretName: 'name',
-      secretKey: secretKey,
+      secretKey: 'a'.repeat(64),
     })
 
-    expect(response).toHaveProperty('accessToken', 'newAccessToken')
-    expect(response).toHaveProperty('refreshToken', 'refreshToken')
-    expect(response.meta).toEqual({metaKey: 'metaValue'})
+    expect(response).toHaveProperty('accessToken', EXPECT_DATA.accessToken)
+    expect(response).toHaveProperty('refreshToken', EXPECT_DATA.refreshToken)
+    expect(response.meta).toEqual(JSON.parse(EXPECT_DATA.meta))
   })
 
   it('throws an error if token refresh fails', async () => {
-    const secretKey = 'a'.repeat(64)
-    const encryptedAccessToken = encrypt('accessToken', secretKey)
-    const encryptedRefreshToken = encrypt('refreshToken', secretKey)
+    const EXPECT_DATA = {
+      request: {
+        accessToken: 'newAccessToken',
+        expiresAt: '1000-11-10T10:00:00Z',
+        meta: '{"metaKey": "metaValue"}',
+        refreshToken: 'newRefreshToken',
+        vendor: Vendor.GOOGLE,
+      },
+      errorMessage: 'Error refreshing token: Invalid refresh token',
+    }
 
-    ;(fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            accessToken: encryptedAccessToken,
-            refreshToken: encryptedRefreshToken,
-            expiresAt: '2023-11-01T10:00:00Z',
-            meta: JSON.stringify({metaKey: 'metaValue'}),
-            vendor: 'google',
-          }),
-      })
-      .mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve({error_description: 'Invalid refresh token'}),
-      })
+    mockedGqlClient.request.mockResolvedValueOnce({fetchCredentialSecret: EXPECT_DATA.request})
+
+    jest.mocked(refreshTokens.google).mockImplementationOnce(() => {
+      throw new Error(EXPECT_DATA.errorMessage)
+    })
 
     const sdk = zero({apiToken: 'token'})
 
@@ -202,8 +191,57 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         secretName: 'name',
-        secretKey: secretKey,
+        secretKey: 'a'.repeat(64),
       }),
-    ).rejects.toThrow('Error refreshing token: Invalid refresh token')
+    ).rejects.toThrow(EXPECT_DATA.errorMessage)
+  })
+
+  it('success refresh token', async () => {
+    const GQL_MOCK = {
+      accessToken: 'newAccessToken',
+      expiresAt: '1000-11-10T10:00:00Z',
+      meta: '{"metaKey": "metaValue"}',
+      refreshToken: 'newRefreshToken',
+      vendor: Vendor.GOOGLE,
+    }
+
+    const REFRESH_TOKENS_MOCK = {
+      accessToken: 'awesomeAccessToken',
+      refreshToken: 'newAwesomeRefreshToken',
+      expiresIn: 3600,
+    }
+
+    const apiToken = 'mockApiToken'
+    const secretKey = 'a'.repeat(64)
+    const secretName = 'mockSecretName'
+
+    mockedGqlClient.request.mockResolvedValueOnce({fetchCredentialSecret: GQL_MOCK})
+    jest.mocked(refreshTokens.google).mockImplementationOnce(async () => REFRESH_TOKENS_MOCK)
+    const updateSecretSpy = jest.spyOn(updateSecretModule, 'updateSecret')
+
+    const sdk = zero({apiToken})
+
+    await expect(
+      sdk.fetchCredentialSecret({
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        secretName,
+        secretKey,
+      }),
+    ).resolves.toEqual({
+      accessToken: REFRESH_TOKENS_MOCK.accessToken,
+      refreshToken: REFRESH_TOKENS_MOCK.refreshToken,
+      meta: JSON.parse(GQL_MOCK.meta),
+    })
+
+    expect(updateSecretSpy).toHaveBeenCalledWith({
+      accessToken: REFRESH_TOKENS_MOCK.accessToken,
+      apiToken,
+      refreshToken: REFRESH_TOKENS_MOCK.refreshToken,
+      expiresIn: REFRESH_TOKENS_MOCK.expiresIn,
+      expiresAt: undefined,
+      secretKey,
+      secretName,
+    })
   })
 })
