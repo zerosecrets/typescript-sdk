@@ -1,0 +1,27 @@
+import {GitLab} from 'arctic'
+import {ResponseRefreshTokens} from 'sdk/types'
+
+export const refreshGitlabTokens = async (params: {
+  clientId: string
+  clientSecret: string
+  decryptedRefreshToken: string
+}): Promise<ResponseRefreshTokens> => {
+  try {
+    const gitlab = new GitLab('https://gitlab.com', params.clientId, params.clientSecret, '')
+    const tokens = await gitlab.refreshAccessToken(params.decryptedRefreshToken)
+    const accessToken = tokens.accessToken()
+    const refreshToken = tokens.refreshToken()
+
+    if (!accessToken || !refreshToken) {
+      throw new Error(`Invalid refresh token response type: ${JSON.stringify(tokens.data)}`)
+    }
+
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn: tokens.accessTokenExpiresInSeconds(),
+    }
+  } catch (error) {
+    throw error
+  }
+}
