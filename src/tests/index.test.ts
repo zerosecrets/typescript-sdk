@@ -245,3 +245,31 @@ describe('Zero TypeScript SDK - fetchCredentialSecret', () => {
     })
   })
 })
+
+describe('Zero TypeScript SDK - deleteCredentialSecret', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it('throws an error if secret name is empty', async () => {
+    const sdk = zero({apiToken: 'token'})
+    await expect(sdk.deleteCredentialSecret({secretName: ''})).rejects.toThrow('Secret name should be provided')
+  })
+
+  it('successfully delete credential secret', async () => {
+    mockedGqlClient.request.mockResolvedValueOnce({deleteCredentialSecret: {id: 'mock-id'}})
+    const sdk = zero({apiToken: 'token'})
+    const response = await sdk.deleteCredentialSecret({secretName: 'some name'})
+    expect(response).toBe('The credentials secret has been successfully deleted')
+  })
+
+  it('throws an error if delete fails', async () => {
+    mockedGqlClient.request.mockResolvedValueOnce({errors: [{message: 'some api error'}]})
+    const sdk = zero({apiToken: 'token'})
+
+    await expect(sdk.deleteCredentialSecret({secretName: 'name'})).rejects.toThrow({
+      name: 'error name',
+      message: 'Error delete secret name',
+    })
+  })
+})

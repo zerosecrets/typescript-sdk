@@ -4,17 +4,16 @@ import {ResponseSuccess} from 'sdk/types'
 
 export const deleteSecret = async (params: {apiToken: string; secretName: string}): Promise<ResponseSuccess> => {
   try {
-    await gqlClient.request(DeleteCredentialSecret, {
-      apiToken: params.apiToken,
-      secretName: params.secretName,
-    })
+    const id = (
+      await gqlClient.request<{deleteCredentialSecret: {id: string}}>(DeleteCredentialSecret, {
+        apiToken: params.apiToken,
+        secretName: params.secretName,
+      })
+    ).deleteCredentialSecret.id
 
-      //  fetchResponse = (
-      //         await gqlClient.request<{fetchCredentialSecret: FetchCredentialSecretOutput}>(FetchCredentialSecret, {
-      //           apiToken: config.apiToken,
-      //           secretName: params.secretName,
-      //         })
-      //       ).fetchCredentialSecret
+    if (!id) {
+      throw new Error()
+    }
 
     return {success: true}
   } catch (error) {

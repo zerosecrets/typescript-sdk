@@ -237,20 +237,6 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         throw new Error('Secret name should be provided')
       }
 
-      let fetchResponse
-
-      try {
-        fetchResponse = (
-          await gqlClient.request<{fetchCredentialSecret: FetchCredentialSecretOutput}>(FetchCredentialSecret, {
-            apiToken: config.apiToken,
-            secretName: params.secretName,
-          })
-        ).fetchCredentialSecret
-      } catch (error) {
-        console.error(error)
-        throw error
-      }
-
       await deleteSecret({
         apiToken: config.apiToken,
         secretName: params.secretName,
