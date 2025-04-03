@@ -9,8 +9,16 @@ export const deleteSecret = async (params: {apiToken: string; secretName: string
       secretName: params.secretName,
     })
 
+      //  fetchResponse = (
+      //         await gqlClient.request<{fetchCredentialSecret: FetchCredentialSecretOutput}>(FetchCredentialSecret, {
+      //           apiToken: config.apiToken,
+      //           secretName: params.secretName,
+      //         })
+      //       ).fetchCredentialSecret
+
     return {success: true}
   } catch (error) {
+    console.log(error)
     throw new Error(`Error delete secret ${params.secretName}`)
   }
 }
