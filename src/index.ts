@@ -256,7 +256,7 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         secretName: params.secretName,
       })
 
-      return 'The credentials secret has been successfully created'
+      return 'The credentials secret has been successfully deleted'
     },
   } as ReturnTypeZero<T>
 }
