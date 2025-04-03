@@ -16,6 +16,7 @@ import {
   Vendor,
 } from 'sdk/types'
 import {updateSecret} from 'sdk/updateSecret'
+import {deleteSecret} from './deleteSecret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
@@ -224,6 +225,38 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         refreshToken: decryptedRefreshToken,
         meta: JSON.parse(fetchResponse.meta),
       }
+    },
+
+    /**
+     * Delete a credential secret.
+     * @param params
+     * @returns
+     */
+    async deleteCredentialSecret(params): Promise<string> {
+      if (!params.secretName) {
+        throw new Error('Secret name should be provided')
+      }
+
+      let fetchResponse
+
+      try {
+        fetchResponse = (
+          await gqlClient.request<{fetchCredentialSecret: FetchCredentialSecretOutput}>(FetchCredentialSecret, {
+            apiToken: config.apiToken,
+            secretName: params.secretName,
+          })
+        ).fetchCredentialSecret
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
+
+      await deleteSecret({
+        apiToken: config.apiToken,
+        secretName: params.secretName,
+      })
+
+      return 'The credentials secret has been successfully created'
     },
   } as ReturnTypeZero<T>
 }
