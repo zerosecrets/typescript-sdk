@@ -16,6 +16,7 @@ import {
   Vendor,
 } from 'sdk/types'
 import {updateSecret} from 'sdk/updateSecret'
+import {deleteSecret} from './deleteSecret'
 
 export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero<T> => {
   // Check if both tokens are missing
@@ -224,6 +225,24 @@ export const zero = <T extends NewConfig | OldConfig>(config: T): ReturnTypeZero
         refreshToken: decryptedRefreshToken,
         meta: JSON.parse(fetchResponse.meta),
       }
+    },
+
+    /**
+     * Delete a credential secret.
+     * @param params
+     * @returns
+     */
+    async deleteCredentialSecret(params): Promise<string> {
+      if (!params.secretName) {
+        throw new Error('Secret name should be provided')
+      }
+
+      await deleteSecret({
+        apiToken: config.apiToken,
+        secretName: params.secretName,
+      })
+
+      return 'The credentials secret has been successfully deleted'
     },
   } as ReturnTypeZero<T>
 }

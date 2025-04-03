@@ -27,6 +27,8 @@ export type ReturnTypeZero<T> = T extends NewConfig
         meta: Record<string, any>
         refreshToken: string
       }>
+
+      deleteCredentialSecret(params: {secretName: string}): Promise<string>
     }
   : {
       fetch(): Promise<{[key: string]: {[key: string]: string} | undefined}>
